@@ -5,6 +5,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import { aliasPlugin } from './plugins/alias-plugin';
 import { BuildOptions } from '../utils/options';
+import { lazyRequirePlugin } from './plugins/lazy-require';
 import { replacePlugin } from './plugins/replace-plugin';
 import { writePkgJson } from '../utils/write-pkg-json';
 import { RollupOptions, OutputOptions } from 'rollup';
@@ -57,7 +58,6 @@ export async function testing(opts: BuildOptions) {
     'expect',
     '@jest/reporters',
     'jest-message-id',
-    'chalk',
     'net',
     'os',
     'path',
@@ -82,6 +82,7 @@ export async function testing(opts: BuildOptions) {
     format: 'cjs',
     dir: opts.output.testingDir,
     esModule: false,
+    preferConst: true,
   };
 
   const testingBundle: RollupOptions = {
@@ -89,26 +90,21 @@ export async function testing(opts: BuildOptions) {
     output,
     external,
     plugins: [
+      lazyRequirePlugin(opts, ['@app-data'], '@stencil/core/internal/app-data'),
+      lazyRequirePlugin(opts, ['@dev-server'], '../dev-server/index.js'),
+      lazyRequirePlugin(opts, ['@mock-doc'], '../mock-doc/index.js'),
+      lazyRequirePlugin(opts, ['@platform', '@testing-platform'], '@stencil/core/internal/testing'),
       {
         name: 'testingImportResolverPlugin',
         resolveId(importee) {
           if (importee === '@compiler') {
             return {
-              id: '../compiler/index.js',
+              id: '../compiler/stencil.js',
               external: true
-            }
+            };
           }
-          if (importee === '@dev-server') {
-            return {
-              id: '../dev-server/index.js',
-              external: true
-            }
-          }
-          if (importee === '@mock-doc') {
-            return {
-              id: '../mock-doc/index.js',
-              external: true
-            }
+          if (importee === 'chalk') {
+            return require.resolve('ansi-colors');
           }
           return null;
         }

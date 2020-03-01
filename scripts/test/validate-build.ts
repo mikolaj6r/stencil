@@ -62,10 +62,6 @@ const pkgs: TestPackage[] = [
     ]
   },
   {
-    // internal/runtime
-    packageJson: 'internal/runtime/package.json',
-  },
-  {
     // internal/testing
     packageJson: 'internal/testing/package.json',
   },

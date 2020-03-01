@@ -1,4 +1,6 @@
+import { CompileOptions } from '../../declarations';
 import { formatDiagnostic, getCompilerOptions, transpile } from '../test-transpile';
+import ts from 'typescript';
 
 
 export const jestPreprocessor = {
@@ -10,9 +12,22 @@ export const jestPreprocessor = {
     }
 
     if (shouldTransformTs(filePath) || shouldTransformEsm(filePath, sourceText)) {
-      const opts = Object.assign({}, this.getCompilerOptions(jestConfig.rootDir));
+      const opts: CompileOptions = {
+        file: filePath,
+        currentDirectory: jestConfig.rootDir,
+      };
 
-      const results = transpile(sourceText, opts, filePath);
+      const tsCompilerOptions: ts.CompilerOptions = this.getCompilerOptions(jestConfig.rootDir);
+      if (tsCompilerOptions) {
+        if (tsCompilerOptions.baseUrl) {
+          opts.baseUrl = tsCompilerOptions.baseUrl;
+        }
+        if (tsCompilerOptions.paths) {
+          opts.paths = tsCompilerOptions.paths;
+        }
+      }
+
+      const results = transpile(sourceText, opts);
 
       const hasErrors = results.diagnostics.some((diagnostic) => diagnostic.level === 'error');
 
@@ -20,15 +35,8 @@ export const jestPreprocessor = {
         const msg = results.diagnostics.map(formatDiagnostic).join('\n\n');
         throw new Error(msg);
       }
-      const mapObject = JSON.parse(results.map);
-      mapObject.file = filePath;
-      mapObject.sources = [filePath];
-      delete mapObject.sourceRoot;
 
-      const mapBase64 = Buffer.from(JSON.stringify(mapObject), 'utf8').toString('base64');
-      const sourceMapInlined = `data:application/json;charset=utf-8;base64,${mapBase64}`;
-      const sourceMapComment = results.code.lastIndexOf('//#');
-      return results.code.slice(0, sourceMapComment) + '//# sourceMappingURL=' + sourceMapInlined;
+      return results.code;
     }
 
     if (shouldTransformCss(filePath)) {
@@ -51,7 +59,7 @@ export const jestPreprocessor = {
     // https://github.com/facebook/jest/blob/v23.6.0/packages/jest-runtime/src/script_transformer.js#L61-L90
     if (!this._tsCompilerOptionsKey) {
       const opts = this.getCompilerOptions(transformOptions.rootDir);
-      this._compilerOptionsKey = JSON.stringify(opts);
+      this._tsCompilerOptionsKey = JSON.stringify(opts);
     }
 
     const key = [
@@ -61,7 +69,7 @@ export const jestPreprocessor = {
       filePath,
       jestConfigStr,
       !!transformOptions.instrument,
-      1 // cache buster
+      2 // cache buster
     ];
 
     return key.join(':');

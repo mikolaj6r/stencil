@@ -66,6 +66,9 @@
       "@testing": [
         "src/testing/index.ts"
       ],
+      "@testing-platform": [
+        "src/testing/platform/index.ts"
+      ],
       "@stencil/core/internal/client": [
         "src/client/index.ts"
       ],
@@ -80,7 +83,6 @@
       ]
     }
   },
-
   "files": [
     "src/app-data/index.ts",
     "src/app-globals/index.ts",
@@ -108,9 +110,8 @@
     "src/sys/node/index.ts",
     "src/sys/node/node-sys-worker.ts",
     "src/testing/index.ts",
-    "src/testing/platform.ts"
+    "src/testing/platform/index.ts"
   ],
-
   "include": [
     "types/*.d.ts",
     "src/declarations/*.ts"
