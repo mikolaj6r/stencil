@@ -20,21 +20,7 @@ export async function testing(opts: BuildOptions) {
       join(opts.scriptsBundlesDir, 'helpers', 'jest'),
       opts.output.testingDir
     ),
-
-    // copy testing d.ts files
-    fs.copy(
-      join(inputDir),
-      join(opts.output.testingDir),
-      { filter: f => {
-        if (f.endsWith('.d.ts')) {
-          return true;
-        }
-        if (fs.statSync(f).isDirectory()) {
-          return true;
-        }
-        return false
-      } }
-    )
+    copyTestingInternalDts(opts, inputDir),
   ]);
 
   // write package.json
@@ -91,13 +77,13 @@ export async function testing(opts: BuildOptions) {
     external,
     plugins: [
       lazyRequirePlugin(opts, ['@app-data'], '@stencil/core/internal/app-data'),
-      lazyRequirePlugin(opts, ['@dev-server'], '../dev-server/index.js'),
-      lazyRequirePlugin(opts, ['@mock-doc'], '../mock-doc/index.js'),
-      lazyRequirePlugin(opts, ['@platform', '@testing-platform'], '@stencil/core/internal/testing'),
+      lazyRequirePlugin(opts, ['@platform', '@stencil/core/internal/testing'], '@stencil/core/internal/testing'),
+      lazyRequirePlugin(opts, ['@stencil/core/dev-server'], '../dev-server/index.js'),
+      lazyRequirePlugin(opts, ['@stencil/core/mock-doc'], '../mock-doc/index.js'),
       {
         name: 'testingImportResolverPlugin',
         resolveId(importee) {
-          if (importee === '@compiler') {
+          if (importee === '@stencil/core/compiler') {
             return {
               id: '../compiler/stencil.js',
               external: true
@@ -122,4 +108,22 @@ export async function testing(opts: BuildOptions) {
   return [
     testingBundle,
   ];
+}
+
+async function copyTestingInternalDts(opts: BuildOptions, inputDir: string) {
+  // copy testing d.ts files
+
+  await fs.copy(
+    join(inputDir),
+    join(opts.output.testingDir),
+    { filter: f => {
+      if (f.endsWith('.d.ts')) {
+        return true;
+      }
+      if (fs.statSync(f).isDirectory() && !f.includes('platform')) {
+        return true;
+      }
+      return false
+    } }
+  )
 }

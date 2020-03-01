@@ -41,7 +41,7 @@ export async function internalTesting(opts: BuildOptions) {
       {
         name: 'internalTestingPlugin',
         resolveId(importee) {
-          if (importee === '@testing-platform' || importee === '@platform') {
+          if (importee === '@platform') {
             return inputTestingPlatform;
           }
           return null;

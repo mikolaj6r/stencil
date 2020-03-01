@@ -1,4 +1,4 @@
-import { bootstrapLazy, flushAll, flushLoadModule, flushQueue, getHostRef, insertVdomAnnotations, plt, registerComponents, registerContext, registerModule, renderVdom, resetPlatform, startAutoApplyChanges, styles, win, writeTask } from '@testing-platform';
+import { bootstrapLazy, flushAll, flushLoadModule, flushQueue, getHostRef, insertVdomAnnotations, plt, registerComponents, registerContext, registerModule, renderVdom, resetPlatform, startAutoApplyChanges, styles, win, writeTask } from '@stencil/core/internal/testing';
 import { BUILD } from '@app-data';
 import { ComponentCompilerMeta, ComponentRuntimeMeta, ComponentTestingConstructor, HostRef, LazyBundlesRuntimeData, NewSpecPageOptions, SpecPage } from '@stencil/core/internal';
 import { formatLazyBundleRuntimeMeta, getBuildFeatures } from '../compiler';
@@ -279,5 +279,3 @@ function findRootComponent(cmpTags: Set<string>, node: Element): any {
   }
   return null;
 }
-
-export { flushAll, flushLoadModule, flushQueue }

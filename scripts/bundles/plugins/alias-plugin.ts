@@ -9,8 +9,8 @@ export function aliasPlugin(opts: BuildOptions): Plugin {
     ['@app-data', '@stencil/core/internal/app-data'],
     ['@app-globals', '@stencil/core/internal/app-globals'],
     ['@hydrate-factory', '@stencil/core/hydrate-factory'],
-    ['@mock-doc', '@stencil/core/mock-doc'],
-    ['@testing', '@stencil/core/testing'],
+    ['@stencil/core/mock-doc', '@stencil/core/mock-doc'],
+    ['@stencil/core/testing', '@stencil/core/testing'],
   ]);
 
   // ensure we use the same one

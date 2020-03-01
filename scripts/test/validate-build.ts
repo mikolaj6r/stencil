@@ -229,6 +229,9 @@ function validateDts(opts: BuildOptions, dtsEntries: string[]) {
       '@stencil/core/internal': [
         join(opts.rootDir, 'internal', 'index.d.ts')
       ],
+      '@stencil/core/internal/testing': [
+        join(opts.rootDir, 'internal', 'testing', 'index.d.ts')
+      ],
     },
   });
 

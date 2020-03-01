@@ -1,5 +1,6 @@
-import { CompileOptions } from '../../declarations';
-import { formatDiagnostic, getCompilerOptions, transpile } from '../test-transpile';
+import { CompileOptions, Diagnostic } from '@stencil/core/internal';
+import { loadTypeScriptDiagnostic, normalizePath } from '@utils';
+import { transpile } from '../test-transpile';
 import ts from 'typescript';
 
 
@@ -75,6 +76,48 @@ export const jestPreprocessor = {
     return key.join(':');
   }
 };
+
+function formatDiagnostic(diagnostic: Diagnostic) {
+  let m = '';
+
+  if (diagnostic.relFilePath) {
+    m += diagnostic.relFilePath;
+    if (typeof diagnostic.lineNumber === 'number') {
+      m += ':' + diagnostic.lineNumber + 1;
+      if (typeof diagnostic.columnNumber === 'number') {
+        m += ':' + diagnostic.columnNumber;
+      }
+    }
+    m += '\n';
+  }
+
+  m += diagnostic.messageText;
+
+  return m;
+}
+
+function getCompilerOptions(rootDir: string) {
+  if (typeof rootDir !== 'string') {
+    return null;
+  }
+
+  rootDir = normalizePath(rootDir);
+
+  const tsconfigFilePath = ts.findConfigFile(rootDir, ts.sys.fileExists);
+  if (!tsconfigFilePath) {
+    return null;
+  }
+
+  const tsconfigResults = ts.readConfigFile(tsconfigFilePath, ts.sys.readFile);
+
+  if (tsconfigResults.error) {
+    throw new Error(formatDiagnostic(loadTypeScriptDiagnostic(tsconfigResults.error)));
+  }
+
+  const parseResult = ts.parseJsonConfigFileContent(tsconfigResults.config, ts.sys, rootDir, undefined, tsconfigFilePath);
+
+  return parseResult.options;
+}
 
 function shouldTransformTs(filePath: string) {
   return (filePath.endsWith('.ts') || filePath.endsWith('.tsx') || filePath.endsWith('.jsx'));

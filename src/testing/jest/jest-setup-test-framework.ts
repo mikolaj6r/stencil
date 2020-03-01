@@ -1,11 +1,11 @@
 import * as d from '@stencil/core/internal';
 import { BUILD } from '@app-data';
 import { expectExtend } from '../matchers';
-import { setupGlobal, teardownGlobal } from '@mock-doc';
+import { setupGlobal, teardownGlobal } from '@stencil/core/mock-doc';
 import { setupMockFetch } from '../mock-fetch';
 import { HtmlSerializer } from './jest-serializer';
 import { resetBuildConditionals } from '../reset-build-conditionals';
-import { resetPlatform, stopAutoApplyChanges } from '@testing-platform';
+import { resetPlatform, stopAutoApplyChanges } from '@stencil/core/internal/testing';
 
 
 declare const global: d.JestEnvironmentGlobal;

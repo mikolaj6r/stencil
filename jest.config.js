@@ -3,11 +3,11 @@ module.exports = {
   "moduleNameMapper": {
     "@app-data": "<rootDir>/internal/app-data/index.js",
     "@app-globals": "<rootDir>/internal/app-globals/index.js",
-    "@compiler": "<rootDir>/compiler/index.js",
-    "@mock-doc": "<rootDir>/mock-doc/index.js",
     "@platform": "<rootDir>/internal/testing/index.js",
     "@runtime": "<rootDir>/internal/testing/index.js",
-    "@testing": "<rootDir>/testing/index.js",
+    "@stencil/core/compiler": "<rootDir>/compiler/index.js",
+    "@stencil/core/mock-doc": "<rootDir>/mock-doc/index.js",
+    "@stencil/core/testing": "<rootDir>/testing/index.js",
     "@utils": "<rootDir>/src/utils"
   },
   "modulePathIgnorePatterns": [

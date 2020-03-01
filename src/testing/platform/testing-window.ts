@@ -1,4 +1,4 @@
-import { setupGlobal } from '@mock-doc';
+import { setupGlobal } from '@stencil/core/mock-doc';
 
 export const win = setupGlobal(global) as Window;
 
